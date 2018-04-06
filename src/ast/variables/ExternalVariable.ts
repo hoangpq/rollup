@@ -24,7 +24,7 @@ export default class ExternalVariable extends Variable {
 		}
 	}
 
-	includeVariable() {
+	include() {
 		if (this.included) {
 			return false;
 		}
