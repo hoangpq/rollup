@@ -195,7 +195,7 @@ export default class Chunk {
 		this.entryModule = entryFacade;
 		this.isEntryModuleFacade = true;
 		for (const exportName of entryFacade.getAllExports()) {
-			const tracedVariable = entryFacade.trace(exportName);
+			const tracedVariable = entryFacade.traceVariable(exportName);
 			this.exports.set(tracedVariable, entryFacade);
 			this.exportNames[exportName] = tracedVariable;
 		}
@@ -440,7 +440,7 @@ export default class Chunk {
 					// if we have the module in the chunk, inline as Promise.resolve(namespace)
 					// ensuring that we create a namespace import of it as well
 					if (resolution.chunk === this) {
-						const namespace = resolution.namespace();
+						const namespace = resolution.getAndCreateNamespace();
 						namespace.include();
 						node.setResolution(false, namespace.getName());
 						// for the module in another chunk, import that other chunk directly
@@ -573,7 +573,7 @@ export default class Chunk {
 			});
 
 			// deconflict reified namespaces
-			const namespace = module.namespace();
+			const namespace = module.getAndCreateNamespace();
 			if (namespace.needsNamespaceBlock) {
 				namespace.setSafeName(getSafeName(namespace.name));
 			}
@@ -782,7 +782,7 @@ export default class Chunk {
 			source.trim();
 			this.renderedSources.push(source);
 
-			const namespace = module.namespace();
+			const namespace = module.getAndCreateNamespace();
 			if (namespace.needsNamespaceBlock || !source.isEmpty()) {
 				magicString.addSource(source);
 				this.usedModules.push(module);
